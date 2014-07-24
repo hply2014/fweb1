@@ -15,12 +15,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping(value = "/fieldtypes")
+@RequestMapping(value = FieldTypesController.URI)
 public class FieldTypesController {
-	// , produces = "application/json;charset=UTF-8"
 
 	@Autowired
 	private FieldTypesService service;
+
+	public static final String URI = "/fieldtypes";
+	public static final String JSP_PAGE_LIST = "fieldtypes-list";
+	public static final String JSP_PAGE_DETAIL = "fieldtypes-detail";
+	public static final String JSP_PAGE_CREATE = "fieldtypes-create";
+	public static final String JSP_PAGE_MODIFY = "fieldtypes-modify";
 
 	/*
 	 * 列表页面
@@ -28,7 +33,7 @@ public class FieldTypesController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String list(Model model) {
 		model.addAttribute("list", service.getAll());
-		return "fieldtypes-list";
+		return JSP_PAGE_LIST;
 	}
 
 	/*
@@ -38,7 +43,7 @@ public class FieldTypesController {
 	public String detail(@PathVariable String id, Model model) {
 		Utility.println("detail ...");
 		model.addAttribute("fieldTypes", service.get(id));
-		return "fieldtypes-detail";
+		return JSP_PAGE_DETAIL;
 	}
 
 	/*
@@ -47,7 +52,7 @@ public class FieldTypesController {
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public String formCreate(Model model) {
 		model.addAttribute("fieldTypes", new FieldTypes());
-		return "fieldtypes-create";
+		return JSP_PAGE_CREATE;
 	}
 
 	/*
@@ -57,11 +62,13 @@ public class FieldTypesController {
 	public String processCreateSubmit(@Valid FieldTypes fieldTypes,
 			BindingResult result, Model model, RedirectAttributes redirectAttrs) {
 		if (result.hasErrors()) {
-			return null;
+			return JSP_PAGE_CREATE;
 		}
 		Utility.println(fieldTypes.toString());
 		service.insert(fieldTypes);
-		return "redirect:/fieldtypes";
+		redirectAttrs.addFlashAttribute("message", "创建成功");
+		redirectAttrs.addFlashAttribute("fieldTypes", fieldTypes);
+		return "redirect:" + URI;
 	}
 
 	/*
@@ -70,39 +77,36 @@ public class FieldTypesController {
 	@RequestMapping(value = "/modify/{id}", method = RequestMethod.GET)
 	public String formModify(@PathVariable String id, Model model) {
 		model.addAttribute("fieldTypes", service.get(id));
-		return "fieldtypes-modify";
+		return JSP_PAGE_MODIFY;
 	}
 
 	/*
 	 * 修改页面的提交动作
 	 */
 	@RequestMapping(value = "/modify/{id}", method = RequestMethod.POST)
-	public String processModifySubmit(@Valid FieldTypes fieldTypes,
-			BindingResult result, Model model, RedirectAttributes redirectAttrs) {
+	public String processModifySubmit(@PathVariable String id,
+			@Valid FieldTypes fieldTypes, BindingResult result, Model model,
+			RedirectAttributes redirectAttrs) {
 		if (result.hasErrors()) {
-			return "fieldtypes-modify";
+			return JSP_PAGE_MODIFY;
 		}
 		Utility.println(fieldTypes.toString());
 		service.update(fieldTypes);
-		return "redirect:/fieldtypes";
+		redirectAttrs.addFlashAttribute("message", "修改成功");
+		redirectAttrs.addFlashAttribute("fieldTypes", fieldTypes);
+		return "redirect:" + URI;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	public String processSubmit(@Valid FieldTypes fieldTypes,
-			BindingResult result, Model model, RedirectAttributes redirectAttrs) {
-		if (result.hasErrors()) {
-			return null;
-		}
-		// Typically you would save to a db and clear the "form" attribute from
-		// the session
-		// via SessionStatus.setCompleted(). For the demo we leave it in the
-		// session.
-		String message = "Form submitted successfully.  Bound " + fieldTypes;
-		// store a success message for rendering on the next request after
-		// redirect
-		// redirect back to the form to render the success message along with
-		// newly bound values
-		redirectAttrs.addFlashAttribute("message", message);
-		return "redirect:/";
+	/*
+	 * 删除页面
+	 */
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+	public String processDeleteSubmit(@PathVariable String id,
+			RedirectAttributes redirectAttrs) {
+		FieldTypes fieldTypes = service.get(id);
+		service.delete(id);
+		redirectAttrs.addFlashAttribute("delMessage", "删除成功");
+		redirectAttrs.addFlashAttribute("fieldTypes", fieldTypes);
+		return "redirect:" + URI;
 	}
 }

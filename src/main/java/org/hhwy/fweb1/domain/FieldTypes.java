@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hhwy.fweb1.Utility;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -32,6 +33,7 @@ public class FieldTypes implements Serializable {
 	 * [field_t01]， 第一个字段
 	 */
 
+	@NotEmpty
 	private String fieldT01;
 
 	/**

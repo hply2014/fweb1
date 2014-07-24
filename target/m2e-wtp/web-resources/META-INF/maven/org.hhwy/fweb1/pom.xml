@@ -9,7 +9,8 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<org.springframework.version>3.2.9.RELEASE</org.springframework.version>
+		<org.springframework.version>3.2.10.RELEASE</org.springframework.version>
+		<org.springframework.security-version>3.2.4.RELEASE</org.springframework.security-version>
 	</properties>
 
 	<dependencies>
@@ -114,6 +115,13 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.1.1.Final</version>
+		</dependency>
+
+		<!-- Security (used for CSRF protection only) -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework.security-version}</version>
 		</dependency>
 	</dependencies>
 	<build>
